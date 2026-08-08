@@ -27,23 +27,21 @@ botão, preview, indicador de progresso — fica em cada app. Aqui mora só a fu
 
 ## Instalação
 
-O registro é o GitHub Packages, que **exige autenticação mesmo para leitura**. No app consumidor,
-crie um `.npmrc`:
-
-```
-@studiotec-arch:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}
-```
-
-E instale fixando a versão (nunca `latest`, por ordem do catálogo da plataforma compartilhada):
+Instale pela URL de git, **sempre fixada numa tag** (nunca `main`, por ordem do catálogo da
+plataforma compartilhada):
 
 ```bash
-npm install @studiotec-arch/image-compress@1.0.0
+npm install github:Studiotec-Arch/image-compress#v1.0.1
 ```
 
-O `GITHUB_PACKAGES_TOKEN` é um PAT clássico com escopo `read:packages`, de uma conta com acesso
-à org `Studiotec-Arch`. Em build via Docker ele entra como secret de build, não como `ARG` —
-`ARG` fica gravado no histórico da imagem.
+O `prepare` compila no momento do install, então não há passo de build no consumidor.
+
+> **Por que não o GitHub Packages.** O ADR 0001 previa registro npm, e o pacote até é publicado
+> lá a cada tag. Mas o GitHub Packages **exige autenticação até para instalar**, inclusive pacote
+> público — o que obrigaria cada app a carregar um PAT em todo build de Docker, na VPS e no CI.
+> Este repositório é público e não tem nada de negócio (é redimensionamento de imagem), então a
+> URL de git elimina a credencial de todos os consumidores. É o mesmo mecanismo que o ADR já
+> escolheu para o `studiotec-core` em Python: pacote fixado por tag, sem registro privado.
 
 ## Uso
 
