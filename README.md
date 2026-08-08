@@ -31,17 +31,25 @@ Instale pela URL de git, **sempre fixada numa tag** (nunca `main`, por ordem do 
 plataforma compartilhada):
 
 ```bash
-npm install github:Studiotec-Arch/image-compress#v1.0.1
+npm install git+https://github.com/Studiotec-Arch/image-compress.git#v1.0.1
 ```
 
-O `prepare` compila no momento do install, então não há passo de build no consumidor.
+Use a URL `git+https` completa, e não o atalho `github:` — o npm resolve o atalho para
+`git+ssh` no lockfile, que não funciona dentro de um container sem chave. A imagem de build
+precisa ter `git` (`node:22`, não `node:22-slim`); o `prepare` compila no install, então não há
+passo de build no consumidor.
 
-> **Por que não o GitHub Packages.** O ADR 0001 previa registro npm, e o pacote até é publicado
-> lá a cada tag. Mas o GitHub Packages **exige autenticação até para instalar**, inclusive pacote
-> público — o que obrigaria cada app a carregar um PAT em todo build de Docker, na VPS e no CI.
-> Este repositório é público e não tem nada de negócio (é redimensionamento de imagem), então a
-> URL de git elimina a credencial de todos os consumidores. É o mesmo mecanismo que o ADR já
-> escolheu para o `studiotec-core` em Python: pacote fixado por tag, sem registro privado.
+> **Por que não um registro npm.** O ADR 0001 previa GitHub Packages, mas ele **exige
+> autenticação até para instalar**, inclusive pacote público — o que obrigaria cada app a
+> carregar um PAT em todo build de Docker, na VPS e no CI. Este repositório é público e não tem
+> nada de negócio dentro (é redimensionamento de imagem), então a URL de git elimina a
+> credencial de todos os consumidores. É o mesmo mecanismo que o ADR já escolheu para o
+> `studiotec-core` em Python: pacote fixado por tag, sem registro privado.
+
+## Licença
+
+`UNLICENSED` — o repositório é **público para ser instalável sem credencial**, não para ser
+código aberto. Todos os direitos reservados à Studiotec; não há concessão de uso a terceiros.
 
 ## Uso
 
@@ -91,12 +99,19 @@ Os testes cobrem as partes puras e o contrato de borda. A rasterização em si s
 browser e não é exercitada no CI — o que se garante é que nenhum caminho de erro devolva um
 arquivo pior que o original.
 
-## Publicação
+## Lançar uma versão
 
-Versão nova = tag nova. O workflow `publish.yml` roda os testes, confere que a tag bate com o
-`package.json` e publica no GitHub Packages:
+Não há publicação em registro: a **tag é o artefato**. O CI roda os testes e confere que a tag
+bate com o `package.json`.
 
 ```bash
 npm version minor
-git push --follow-tags
+git push origin main --tags
 ```
+
+Use `--tags`, e não `--follow-tags`: o `npm version` cria tag anotada, mas uma tag criada à mão
+com `git tag vX.Y.Z` é leve e o `--follow-tags` a ignora em silêncio — o consumidor fica com um
+`npm install` apontando para uma tag que não existe no remoto.
+
+Depois, atualize a tag fixada em cada app consumidor e registre a versão no catálogo da
+plataforma compartilhada, no repositório do Portal.

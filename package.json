@@ -3,7 +3,8 @@
   "version": "1.0.1",
   "description": "Compressão de imagem no browser antes do upload — biblioteca compartilhada do ecossistema Studiotec.",
   "license": "UNLICENSED",
-  "private": false,
+  "//private": "O repositório é público para os apps instalarem sem credencial, mas o pacote não vai a registro nenhum — `private` evita um `npm publish` acidental.",
+  "private": true,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -28,9 +29,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Studiotec-Arch/image-compress.git"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
