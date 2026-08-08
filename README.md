@@ -34,10 +34,18 @@ plataforma compartilhada):
 npm install git+https://github.com/Studiotec-Arch/image-compress.git#v1.0.1
 ```
 
-Use a URL `git+https` completa, e não o atalho `github:` — o npm resolve o atalho para
-`git+ssh` no lockfile, que não funciona dentro de um container sem chave. A imagem de build
-precisa ter `git` (`node:22`, não `node:22-slim`); o `prepare` compila no install, então não há
-passo de build no consumidor.
+O `prepare` compila no momento do install, então não há passo de build no consumidor. Duas
+armadilhas em build por Docker, ambas já resolvidas no RDO e no RC:
+
+- **A imagem precisa ter `git`** — use `node:22`, não `node:22-slim`, ou o npm não resolve a tag.
+- **O npm normaliza URLs do github para `git+ssh` no lockfile**, mesmo com `git+https` no
+  `package.json`, e dentro do container não há chave SSH. Corrigir o lockfile à mão não adianta:
+  o próximo `npm install` de qualquer dev desfaz. A solução é reescrever no build:
+
+  ```dockerfile
+  RUN git config --global url."https://github.com/".insteadOf ssh://git@github.com/ \
+   && npm install
+  ```
 
 > **Por que não um registro npm.** O ADR 0001 previa GitHub Packages, mas ele **exige
 > autenticação até para instalar**, inclusive pacote público — o que obrigaria cada app a
