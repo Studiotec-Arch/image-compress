@@ -41,9 +41,9 @@ E instale fixando a versão (nunca `latest`, por ordem do catálogo da plataform
 npm install @studiotec-arch/image-compress@1.0.0
 ```
 
-O `GITHUB_PACKAGES_TOKEN` é um PAT clássico com escopo `read:packages`, autorizado para a org
-`Studiotec-Arch`. Em build via Docker ele entra como secret de build, não como `ARG` — `ARG`
-fica gravado no histórico da imagem.
+O `GITHUB_PACKAGES_TOKEN` é um PAT clássico com escopo `read:packages`, de uma conta com acesso
+à org `Studiotec-Arch`. Em build via Docker ele entra como secret de build, não como `ARG` —
+`ARG` fica gravado no histórico da imagem.
 
 ## Uso
 
